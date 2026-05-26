@@ -57,3 +57,6 @@ java -cp "build/classes;src/mysql-connector-j-9.4.0/mysql-connector-j-9.4.0.jar"
 
 Repository: https://github.com/ap4778/Generic-Medicine-Finder
 
+<img width="1105" height="855" alt="image" src="https://github.com/user-attachments/assets/d57758b8-c2ab-43f7-9e80-3e6c79a89400" />
+
+
