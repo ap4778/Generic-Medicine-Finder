@@ -1,10 +1,59 @@
-# Medicine-Substitute
-The Generic Medicine Finder Application is a Java Swing–based desktop solution designed to help users quickly identify generic alternatives to branded medicines. As healthcare costs continue to rise and generic drugs become more widely accepted, this application provides an essential resource for individuals looking for affordable medication options.
+# Generic Medicine Finder
 
-The system offers an intuitive interface where users can enter the name of any branded medicine into a neatly designed rounded text field. After clicking the search button, the application connects to a MySQL database that stores detailed information about medicines and their generic equivalents. The results are presented clearly and include key details such as the generic medicine name, dosage, brand, price, chemical composition, and the accuracy of the suggestion.
+A Java Swing desktop application that helps users search for generic medicine substitutes from a MySQL-backed dataset.
 
-To ensure reliability, the application includes strong input validation to prevent errors and guide users with meaningful error messages if the input is empty or invalid. When no matching medicine is found, the system alerts the user, maintaining a smooth and user-friendly experience.
+## Features
 
-The application also opens opportunities for future enhancements, such as advanced filters based on price, brand, or accuracy, and the ability to recommend similar medicines when an exact substitute is unavailable. These additions would further improve usability and support users in making informed decisions about their healthcare choices.
+- Search branded medicines and view their generic substitute details.
+- Display dosage, brand, price, salt name, and availability.
+- Clean Swing UI with a logo header and responsive search workflow.
+- Uses MySQL for data storage and retrieval.
 
-Overall, the Generic Medicine Finder Application aims to empower individuals by providing quick and easy access to essential pharmaceutical information. By simplifying the search for safe and affordable generic medicines, the project emphasizes the value of technology in improving healthcare accessibility, awareness, and cost management.
+## Project Structure
+
+- `Medicine/src/MedicineApp.java` — main Swing application UI and search flow
+- `Medicine/src/MedicineService.java` — database access/service layer
+- `Medicine/src/DatabaseConnection.java` — MySQL connection configuration
+- `Medicine/src/Medicine.java` — data model for medicine records
+- `Medicine/src/Resources/images/` — image assets used in the UI
+- `SQL.txt` — sample SQL for populating the medicines table
+
+## Requirements
+
+- Java 21+
+- MySQL 8+
+- MySQL Connector/J 9.4.0 (included in `Medicine/src/mysql-connector-j-9.4.0/`)
+
+## Database Setup
+
+1. Create a MySQL database named `medicines_db`.
+2. Import or run the SQL from `SQL.txt` to create and populate the `medicines` table.
+3. Make sure the database user and password match the defaults in `DatabaseConnection.java`, or set environment variables:
+   - `MED_DB_URL`
+   - `MED_DB_USER`
+   - `MED_DB_PASSWORD`
+
+## How to Run
+
+From the `Medicine` directory:
+
+```bash
+javac -cp "src/mysql-connector-j-9.4.0/mysql-connector-j-9.4.0.jar" -d build/classes src/*.java
+java -cp "build/classes;src/mysql-connector-j-9.4.0/mysql-connector-j-9.4.0.jar" MedicineApp
+```
+
+## Notes
+
+- The app expects a running MySQL server on `localhost:3306`.
+- If the logo asset is unavailable, the UI falls back to a generated placeholder icon.
+
+## Future Improvements
+
+- Add search filters by dosage, brand, or price.
+- Add medicine suggestions when exact matches are not found.
+- Improve error handling and offline fallback behavior.
+
+## GitHub
+
+Repository: https://github.com/ap4778/Generic-Medicine-Finder
+
