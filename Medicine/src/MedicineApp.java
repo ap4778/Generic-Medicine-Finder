@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,7 +31,7 @@ public class MedicineApp extends JFrame {
         headerPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20)); // Center aligned with vertical spacing
 
         // Load, resize, and add the logo to the header
-        ImageIcon logoIcon = new ImageIcon("/Users/yasharthkesarwani/NetBeansProjects/Medicine/src/Resources/images/logo.png");
+        ImageIcon logoIcon = loadLogoIcon();
         Image logoImage = logoIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH); // Resize logo
         JLabel logoLabel = new JLabel(new ImageIcon(logoImage));
 
@@ -123,6 +125,31 @@ public class MedicineApp extends JFrame {
         add(mainPanel);
     }
 
+    private ImageIcon loadLogoIcon() {
+        java.net.URL logoUrl = getClass().getResource("/Resources/images/logo.png");
+        if (logoUrl != null) {
+            return new ImageIcon(logoUrl);
+        }
+
+        File logoFile = new File("src/Resources/images/logo.png");
+        if (logoFile.exists()) {
+            return new ImageIcon(logoFile.getAbsolutePath());
+        }
+
+        BufferedImage placeholder = new BufferedImage(50, 50, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = placeholder.createGraphics();
+        try {
+            g2.setColor(new Color(30, 144, 255));
+            g2.fillRect(0, 0, placeholder.getWidth(), placeholder.getHeight());
+            g2.setColor(Color.WHITE);
+            g2.setFont(new Font("Arial", Font.BOLD, 18));
+            g2.drawString("GM", 11, 31);
+        } finally {
+            g2.dispose();
+        }
+        return new ImageIcon(placeholder);
+    }
+
     private void findGenericSubstitute() {
         String medicineName = medicineNameField.getText().trim();
 
@@ -131,32 +158,22 @@ public class MedicineApp extends JFrame {
             return;
         }
 
-        try (Connection connection = DatabaseConnection.getConnection()) {
-            String query = "SELECT generic_substitute, dosage, brand, price, salt_name, availability FROM medicines WHERE medicine_name = ?";
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, medicineName);
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                String substitute = resultSet.getString("generic_substitute");
-                String dosage = resultSet.getString("dosage");
-                String brand = resultSet.getString("brand");
-                double price = resultSet.getDouble("price");
-                String saltName = resultSet.getString("salt_name");
-                String availability = resultSet.getString("availability");
-
+        MedicineService medicineService = new MedicineService();
+        try {
+            Medicine medicine = medicineService.findSubstitute(medicineName);
+            if (medicine != null) {
                 resultLabel.setText("<html><div style='padding:10px;'>" +
-                        "<strong style='color:#2E8B57;'>Generic Substitute:</strong> " + substitute + "<br><br>" +
-                        "<strong style='color:#2E8B57;'>Dosage:</strong> " + dosage + "<br><br>" +
-                        "<strong style='color:#2E8B57;'>Brand:</strong> " + brand + "<br><br>" +
-                        "<strong style='color:#2E8B57;'>Price:</strong> Rs. " + price + "<br><br>" +
-                        "<strong style='color:#2E8B57;'>Salt Name:</strong> " + saltName + "<br><br>" +
-                        "<strong style='color:#2E8B57;'>Availability:</strong> " + availability + "</div></html>");
+                        "<strong style='color:#2E8B57;'>Generic Substitute:</strong> " + medicine.getGenericSubstitute() + "<br><br>" +
+                        "<strong style='color:#2E8B57;'>Dosage:</strong> " + medicine.getDosage() + "<br><br>" +
+                        "<strong style='color:#2E8B57;'>Brand:</strong> " + medicine.getBrand() + "<br><br>" +
+                        "<strong style='color:#2E8B57;'>Price:</strong> Rs. " + medicine.getPrice() + "<br><br>" +
+                        "<strong style='color:#2E8B57;'>Salt Name:</strong> " + medicine.getSaltName() + "<br><br>" +
+                        "<strong style='color:#2E8B57;'>Availability:</strong> " + medicine.getAvailability() + "</div></html>");
             } else {
                 resultLabel.setText("<html><font color='red'>No substitute found for " + medicineName + "</font></html>");
             }
         } catch (SQLException e) {
-            resultLabel.setText("<html><font color='red'>Error: Unable to query the database.</font></html>");
+            resultLabel.setText("<html><font color='red'>Error: Unable to query the database. Check your connection settings.</font></html>");
             e.printStackTrace();
         }
     }
